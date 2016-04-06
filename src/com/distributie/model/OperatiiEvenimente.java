@@ -40,6 +40,16 @@ public class OperatiiEvenimente implements AsyncTaskListener, JavaWSListener {
 		callJavaWS();
 	}
 
+	public void setSfarsitIncarcare(HashMap<String, String> params) {
+		numeOperatie = EnumOperatiiEvenimente.SET_SFARSIT_INC;
+		performOperation(numeOperatie, params);
+	}
+
+	public void getSfarsitIncarcare(HashMap<String, String> params) {
+		numeOperatie = EnumOperatiiEvenimente.GET_SFARSIT_INC;
+		performOperation(numeOperatie, params);
+	}	
+	
 	private void performOperation(EnumOperatiiEvenimente numeOperatie, HashMap<String, String> params) {
 		AsyncTaskWSCall call = new AsyncTaskWSCall(numeOperatie.getNumeComanda(), params, (AsyncTaskListener) this, context);
 		call.getCallResults();

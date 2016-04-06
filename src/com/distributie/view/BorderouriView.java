@@ -59,9 +59,6 @@ import com.distributie.model.Utils;
 public class BorderouriView extends Activity implements CustomSpinnerListener, BorderouriDAOListener, OperatiiBorderouriListener, OperatiiEvenimenteListener,
 		EvenimentDialogListener {
 
-	@InjectView(R.id.saveEvent)
-	Button eventButton;
-
 	@InjectView(R.id.showDetBordBtn)
 	Button showDetBtn;
 
@@ -127,6 +124,13 @@ public class BorderouriView extends Activity implements CustomSpinnerListener, B
 	private TimerTask timerTask;
 	private Handler handler = new Handler();
 	private OperatiiEvenimente opEvenimente;
+	private Button eventButton, saveIncarcareButton;
+
+	private enum EnumTipEveniment {
+		SFARSIT_INCARCARE, START_STOP_BORDDEROU;
+	}
+
+	private EnumTipEveniment evenimentBorderou;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -139,10 +143,10 @@ public class BorderouriView extends Activity implements CustomSpinnerListener, B
 		newEvent = new OperatiiBorderouriDAOImpl(this);
 		newEvent.setEventListener(this);
 
-		InitialUISetup();
-
 		opEvenimente = new OperatiiEvenimente(this);
 		opEvenimente.setOperatiiEvenimenteListener(this);
+
+		InitialUISetup();
 
 		startTimerTask();
 
@@ -170,7 +174,6 @@ public class BorderouriView extends Activity implements CustomSpinnerListener, B
 			public void run() {
 				handler.post(new Runnable() {
 					public void run() {
-
 						getEvenimente();
 
 					}
@@ -180,13 +183,14 @@ public class BorderouriView extends Activity implements CustomSpinnerListener, B
 	}
 
 	private void getEvenimente() {
+
 		if (CurrentStatus.getInstance().getNrBorderou() != null) {
+
 			HashMap<String, String> params = new HashMap<String, String>();
 			params.put("codBorderou", CurrentStatus.getInstance().getNrBorderou());
 
 			opEvenimente.getEvenimentStop(params);
 		}
-
 	}
 
 	private void incarcaEvenimente(BeanEvenimentStop evenimentStop) {
@@ -245,10 +249,16 @@ public class BorderouriView extends Activity implements CustomSpinnerListener, B
 			textTripTime.setText("");
 			textTripDistance.setText("");
 
+			eventButton = (Button) findViewById(R.id.saveEvent);
+			eventButton.setVisibility(View.GONE);
 			eventButton.setCompoundDrawablesWithIntrinsicBounds(R.drawable.out1, 0, 0, 0);
 			eventButton.setText("\t\tStart borderou");
-			eventButton.setVisibility(View.INVISIBLE);
 			eventButton.setOnTouchListener(new myEventBtnOnTouchListener());
+
+			saveIncarcareButton = (Button) findViewById(R.id.saveIncarcare);
+			saveIncarcareButton.setText("Sfarsit incarcare");
+			saveIncarcareButton.setOnTouchListener(new myEventBtnOnTouchListener());
+			saveIncarcareButton.setVisibility(View.GONE);
 
 			layoutDetButton.setVisibility(View.GONE);
 
@@ -343,9 +353,8 @@ public class BorderouriView extends Activity implements CustomSpinnerListener, B
 				eventHandler.post(new Runnable() {
 					public void run() {
 						progressBarEvent.setVisibility(View.INVISIBLE);
-						eventButton.setEnabled(false);
-						performSaveNewEvent();
 
+						performAction();
 					}
 				});
 
@@ -363,7 +372,41 @@ public class BorderouriView extends Activity implements CustomSpinnerListener, B
 		super.finish();
 	}
 
-	private void performSaveNewEvent() {
+	private void performAction() {
+
+		if (evenimentBorderou == EnumTipEveniment.START_STOP_BORDDEROU) {
+			eventButton.setEnabled(false);
+			saveStartStopEvent();
+		} else if (evenimentBorderou == EnumTipEveniment.SFARSIT_INCARCARE) {
+			saveIncarcareButton.setEnabled(false);
+			setSfarsitIncarcareBorderou();
+		}
+
+	}
+
+	private void getSfarsitIncarcareBorderou() {
+
+		if (CurrentStatus.getInstance().getNrBorderou() != "") {
+			HashMap<String, String> params = new HashMap<String, String>();
+			params.put("document", CurrentStatus.getInstance().getNrBorderou());
+			params.put("codSofer", UserInfo.getInstance().getId());
+			opEvenimente.getSfarsitIncarcare(params);
+		}
+
+	}
+
+	private void setSfarsitIncarcareBorderou() {
+
+		if (CurrentStatus.getInstance().getNrBorderou() != "") {
+			HashMap<String, String> params = new HashMap<String, String>();
+			params.put("document", CurrentStatus.getInstance().getNrBorderou());
+			params.put("codSofer", UserInfo.getInstance().getId());
+			opEvenimente.setSfarsitIncarcare(params);
+		}
+
+	}
+
+	private void saveStartStopEvent() {
 
 		try {
 
@@ -386,8 +429,6 @@ public class BorderouriView extends Activity implements CustomSpinnerListener, B
 	public void performIncarcaBorderouri() {
 		try {
 
-			eventButton.setEnabled(true);
-
 			BorderouriDAOImpl bord = BorderouriDAOImpl.getInstance(this);
 			bord.setBorderouEventListener(this);
 			bord.getBorderouri(UserInfo.getInstance().getId(), "d", "-1");
@@ -403,6 +444,9 @@ public class BorderouriView extends Activity implements CustomSpinnerListener, B
 		ArrayList<Borderou> borderouriArray = objListBorderouri.decodeJSONBorderouri();
 
 		if (borderouriArray.size() > 0) {
+
+			if (evenimentBorderou == EnumTipEveniment.START_STOP_BORDDEROU)
+				setBordDetVisibility(true);
 
 			listBorderouri.clear();
 			int selectedPosition = -1;
@@ -461,7 +505,21 @@ public class BorderouriView extends Activity implements CustomSpinnerListener, B
 
 	}
 
-	public void performGetBorderouEvents() {
+	private void setBordDetVisibility(boolean isVisible) {
+
+		if (isVisible) {
+			layoutDetButton.setVisibility(View.VISIBLE);
+
+			layoutEventOut.setVisibility(View.VISIBLE);
+			textDateEventOut.setVisibility(View.VISIBLE);
+			textTimeEventOut.setVisibility(View.VISIBLE);
+			textKmEventOut.setVisibility(View.VISIBLE);
+			showDetBtn.setVisibility(View.VISIBLE);
+		}
+
+	}
+
+	public void getStartStopBorderou() {
 		newEvent.getDocEvents(CurrentStatus.getInstance().getNrBorderou(), "0");
 	}
 
@@ -589,7 +647,27 @@ public class BorderouriView extends Activity implements CustomSpinnerListener, B
 			CurrentStatus.getInstance().setNrBorderou(map.get("codBorderou"));
 			CurrentStatus.getInstance().setEveniment(map.get("eveniment"));
 			CurrentStatus.getInstance().setTipBorderou(TipBorderou.valueOf(map.get("tipBorderou")));
-			performGetBorderouEvents();
+
+			getSfarsitIncarcareBorderou();
+
+		}
+
+	}
+
+	private void handleSfarsitIncarcareEvent(String result) {
+
+		if (!result.equals("-1") && (result.contains("#") || result.equals("1"))) {
+			eventButton.setVisibility(View.VISIBLE);
+			eventButton.setEnabled(true);
+			saveIncarcareButton.setVisibility(View.GONE);
+			evenimentBorderou = EnumTipEveniment.START_STOP_BORDDEROU;
+			spinnerBorderouri.setEnabled(false);
+			getStartStopBorderou();
+		} else {
+			eventButton.setVisibility(View.GONE);
+			saveIncarcareButton.setVisibility(View.VISIBLE);
+			saveIncarcareButton.setEnabled(true);
+			evenimentBorderou = EnumTipEveniment.SFARSIT_INCARCARE;
 
 		}
 
@@ -633,6 +711,10 @@ public class BorderouriView extends Activity implements CustomSpinnerListener, B
 		switch (methodName) {
 		case CHECK_STOP:
 			incarcaEvenimente(opEvenimente.deserializeEvenimentStop(result));
+			break;
+		case SET_SFARSIT_INC:
+		case GET_SFARSIT_INC:
+			handleSfarsitIncarcareEvent(result);
 			break;
 		default:
 			break;

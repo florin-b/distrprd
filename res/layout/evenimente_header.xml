@@ -65,7 +65,21 @@
             android:layout_marginLeft="10dip"
             android:layout_marginTop="20dip"
             android:paddingLeft="40dip"
-            android:paddingRight="40dip" />
+            android:paddingRight="40dip"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/saveIncarcare"
+            style="@style/btnStyleEvent3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dip"
+            android:layout_marginTop="20dip"
+            android:paddingBottom="20dip"
+            android:paddingLeft="80dip"
+            android:paddingRight="80dip"
+            android:paddingTop="20dip"
+            android:visibility="gone" />
     </LinearLayout>
 
     <LinearLayout
