@@ -56,6 +56,13 @@
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="sensorLandscape" >
         </activity>
+        
+        <activity
+            android:name="com.distributie.view.AfisEtape"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="sensorLandscape" >
+        </activity>
+        
     </application>
 
 </manifest>

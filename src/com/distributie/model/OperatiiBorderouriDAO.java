@@ -13,7 +13,12 @@ public interface OperatiiBorderouriDAO {
 	
 	public void saveNewEventClient(EvenimentNou newEvent);
 	
+	public void cancelEvent(HashMap<String, String> params);
+	
+	public void getPozitieCurenta(HashMap<String, String> params);
+	
 	public void isBorderouStarted();
 	
 	public void saveLocalObjects();
+	
 }

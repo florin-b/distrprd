@@ -72,6 +72,21 @@ public class OperatiiBorderouriDAOImpl implements OperatiiBorderouriDAO, AsyncTa
 	}
 
 	@Override
+	public void cancelEvent(HashMap<String, String> params) {
+		this.params = params;
+		numeComanda = EnumOperatiiEvenimente.CANCEL_EVENT;
+		performOperation();
+	}
+
+	@Override
+	public void getPozitieCurenta(HashMap<String, String> params) {
+		this.params = params;
+		numeComanda = EnumOperatiiEvenimente.GET_POZITIE;
+		performOperation();
+
+	}
+
+	@Override
 	public void saveLocalObjects() {
 
 		LocalStorage ls = new LocalStorage(context);

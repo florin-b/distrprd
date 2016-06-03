@@ -106,6 +106,8 @@ public class LogonActivity extends Activity implements LogonListener {
 			txtDeviceId.setText(deviceId.replaceAll(".{3}", "$0 "));
 
 			getCodSofer(deviceId);
+			
+			
 
 		} catch (Exception ex) {
 			Toast.makeText(this, ex.toString(), Toast.LENGTH_LONG).show();
@@ -459,23 +461,9 @@ public class LogonActivity extends Activity implements LogonListener {
 
 	private void redirectView() {
 
-		InitStatus initStatus = InitStatus.getInstance();
-
-		if (noActivity(initStatus)) {
-			Intent nextScreen = new Intent(getApplicationContext(), MainMenu.class);
-			startActivity(nextScreen);
-			finish();
-		} else {
-			if (activeDocument(initStatus)) {
-				Intent nextScreen = new Intent(getApplicationContext(), BorderouriView.class);
-				startActivity(nextScreen);
-				finish();
-			} else if (activeClient(initStatus)) {
-				Intent nextScreen = new Intent(getApplicationContext(), Livrare.class);
-				startActivity(nextScreen);
-				finish();
-			}
-		}
+		Intent nextScreen = new Intent(getApplicationContext(), MainMenu.class);
+		startActivity(nextScreen);
+		finish();
 
 	}
 

@@ -43,10 +43,9 @@ public class MainMenu extends Activity implements OperatiiEvenimenteListener, Ev
 
 	GridView mainGridView;
 
-	private String[] btnNames = { "Sofer", "Borderouri", "Livrare", "Istoric", "Iesire" };
+	private String[] btnNames = { "Etape", "Istoric", "Iesire" };
 
-	private int[] btnIcons = new int[] { R.drawable.chauffeur_hat, R.drawable.documents_icon, R.drawable.delivery,
-			R.drawable.history, R.drawable.test_connection, R.drawable.exit };
+	private int[] btnIcons = new int[] { R.drawable.delivery, R.drawable.history, R.drawable.exit };
 
 	private Handler handler = new Handler();
 
@@ -73,10 +72,9 @@ public class MainMenu extends Activity implements OperatiiEvenimenteListener, Ev
 			Toast.makeText(getBaseContext(), ex.toString(), Toast.LENGTH_LONG).show();
 		}
 
-		opEvenimente = new OperatiiEvenimente(this);
-		opEvenimente.setOperatiiEvenimenteListener(this);
-
-		startTimerTask();
+		Intent nextScreen = new Intent(MainMenu.this, AfisEtape.class);
+		startActivity(nextScreen);
+		finish();
 
 	}
 
@@ -251,6 +249,22 @@ public class MainMenu extends Activity implements OperatiiEvenimenteListener, Ev
 					try {
 
 						Intent nextScreen = new Intent(MainMenu.this, Livrare.class);
+						startActivity(nextScreen);
+
+						finish();
+
+					} catch (Exception e) {
+						Toast.makeText(MainMenu.this, e.toString(), Toast.LENGTH_SHORT).show();
+					}
+
+				}
+
+				// etape
+				if (selectedBtnName.equalsIgnoreCase("Etape")) {
+
+					try {
+
+						Intent nextScreen = new Intent(MainMenu.this, AfisEtape.class);
 						startActivity(nextScreen);
 
 						finish();
