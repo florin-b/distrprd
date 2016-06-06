@@ -106,8 +106,6 @@ public class LogonActivity extends Activity implements LogonListener {
 			txtDeviceId.setText(deviceId.replaceAll(".{3}", "$0 "));
 
 			getCodSofer(deviceId);
-			
-			
 
 		} catch (Exception ex) {
 			Toast.makeText(this, ex.toString(), Toast.LENGTH_LONG).show();
