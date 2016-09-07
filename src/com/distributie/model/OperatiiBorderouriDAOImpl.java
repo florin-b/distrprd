@@ -7,6 +7,7 @@ import java.util.List;
 
 import android.content.Context;
 
+import com.distributie.beans.Etapa;
 import com.distributie.beans.EvenimentNou;
 import com.distributie.enums.EnumNetworkStatus;
 import com.distributie.enums.EnumOperatiiEvenimente;
@@ -37,12 +38,16 @@ public class OperatiiBorderouriDAOImpl implements OperatiiBorderouriDAO, AsyncTa
 	}
 
 	@Override
-	public void saveNewEventBorderou(HashMap<String, String> newEventData) {
+	public void saveNewEventBorderou(HashMap<String, String> newEventData, List<Etapa> listEtape) {
 		JSONOperations jsonEvLivrare = new JSONOperations(context, newEventData);
 		String serializedData = jsonEvLivrare.encodeNewEventData();
+		String serializedEtape = "";
+		if (listEtape != null)
+			serializedEtape = jsonEvLivrare.serializeOrdineLivrare(listEtape);
 
 		params = new HashMap<String, String>();
 		params.put("serializedEvent", serializedData);
+		params.put("serializedEtape", serializedEtape);
 		numeComanda = EnumOperatiiEvenimente.SAVE_NEW_EVENT;
 
 		performOperation();

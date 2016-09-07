@@ -70,6 +70,7 @@ public class HandleJSONData {
 		ArrayList<Factura> objectsList = new ArrayList<Factura>();
 
 		try {
+
 			jsonObject = new JSONArray(JSONString);
 
 			for (int i = 0; i < jsonObject.length(); i++) {
@@ -92,6 +93,9 @@ public class HandleJSONData {
 				oFactura.setCodAdresaClient(facturaObject.getString("codAdresaClient"));
 
 				oFactura.setDataStartCursa(facturaObject.getString("dataStartCursa"));
+
+				oFactura.setPozitie(facturaObject.getString("pozitie"));
+				oFactura.setNrFactura(facturaObject.getString("nrFactura"));
 
 				objectsList.add(oFactura);
 
@@ -229,8 +233,7 @@ public class HandleJSONData {
 					CurrentStatus.getInstance().setCurrentClient(initStatus.getClient());
 					CurrentStatus.getInstance().setNrBorderou(initStatus.getDocument());
 					CurrentStatus.getInstance().setEveniment(initStatus.getEveniment());
-					CurrentStatus.getInstance().setTipBorderou(
-							InfoStrings.getStringTipBorderou(jsonStatus.get("tipDocument").toString()));
+					CurrentStatus.getInstance().setTipBorderou(InfoStrings.getStringTipBorderou(jsonStatus.get("tipDocument").toString()));
 				}
 			}
 

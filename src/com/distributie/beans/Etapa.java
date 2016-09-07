@@ -3,7 +3,7 @@ package com.distributie.beans;
 import com.distributie.enums.EnumTipEtapa;
 import com.distributie.enums.TipBorderou;
 
-public class Etapa {
+public class Etapa implements Comparable<Etapa> {
 
 	private String cod;
 	private String nume;
@@ -14,9 +14,8 @@ public class Etapa {
 	private boolean salvata;
 	private Factura factura;
 	private TipBorderou tipBorderou;
-	private String codClient;
-	private String codAdresaClient;
 	private String observatii = "";
+	private String pozitie;
 
 	public Etapa() {
 
@@ -149,6 +148,23 @@ public class Etapa {
 
 	public void setObservatii(String observatii) {
 		this.observatii = observatii;
+	}
+
+	public String getPozitie() {
+		return pozitie;
+	}
+
+	public void setPozitie(String pozitie) {
+		this.pozitie = pozitie;
+	}
+
+	@Override
+	public int compareTo(Etapa arg0) {
+
+		if (this.getPozitie() == null || arg0.getPozitie() == null)
+			return 0;
+		else
+			return Integer.valueOf(this.getPozitie()) - Integer.valueOf(arg0.getPozitie());
 	}
 
 }

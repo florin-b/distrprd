@@ -12,6 +12,7 @@ import org.json.JSONObject;
 import android.content.Context;
 import android.widget.Toast;
 
+import com.distributie.beans.Etapa;
 import com.distributie.beans.EvenimentNou;
 import com.distributie.enums.TipEveniment;
 
@@ -59,6 +60,37 @@ public class JSONOperations {
 		}
 
 		return jsonData;
+	}
+
+	public String serializeOrdineLivrare(List<Etapa> listEtape) {
+
+		JSONArray jsonArray = new JSONArray();
+		JSONObject jsonObject = null;
+
+		Iterator<Etapa> iterator = listEtape.iterator();
+		Etapa etapa = null;
+		while (iterator.hasNext()) {
+
+			try {
+
+				jsonObject = new JSONObject();
+				etapa = iterator.next();
+
+				if (etapa.getCodClient() != null) {
+					jsonObject.put("borderou", etapa.getDocument());
+					jsonObject.put("client", etapa.getCodClient());
+					jsonObject.put("codAdresa", etapa.getCodAdresaClient());
+					jsonObject.put("pozitie", etapa.getPozitie());
+					jsonObject.put("document", etapa.getFactura().getNrFactura());
+					jsonArray.put(jsonObject);
+				}
+			} catch (JSONException ex) {
+
+			}
+
+		}
+
+		return jsonArray.toString();
 	}
 
 	public String encodeNewEventData(EvenimentNou newEvent) {

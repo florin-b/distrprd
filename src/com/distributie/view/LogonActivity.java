@@ -35,7 +35,6 @@ import android.telephony.TelephonyManager;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -106,6 +105,7 @@ public class LogonActivity extends Activity implements LogonListener {
 			txtDeviceId.setText(deviceId.replaceAll(".{3}", "$0 "));
 
 			getCodSofer(deviceId);
+			
 
 		} catch (Exception ex) {
 			Toast.makeText(this, ex.toString(), Toast.LENGTH_LONG).show();

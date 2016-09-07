@@ -5,6 +5,7 @@
 package com.distributie.view;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -13,7 +14,6 @@ import java.util.TimerTask;
 
 import android.app.ActionBar;
 import android.app.Activity;
-
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.Menu;
@@ -39,7 +39,6 @@ import com.distributie.model.CurrentStatus;
 import com.distributie.model.HandleJSONData;
 import com.distributie.model.OperatiiEvenimente;
 import com.distributie.model.UserInfo;
-
 
 public class AfisEtape extends Activity implements BorderouriDAOListener, OperatiiEvenimenteListener, OperatiiEtapeListener, BorderouriListener {
 
@@ -257,6 +256,7 @@ public class AfisEtape extends Activity implements BorderouriDAOListener, Operat
 				etapa.setTipBorderou(borderouCurent.getStandardTipBorderou());
 				etapa.setDocument(borderouCurent.getNumarBorderou());
 				etapa.setTipEtapa(EnumTipEtapa.SOSIRE);
+				etapa.setPozitie(listFacturi.get(i).getPozitie().equals("-1") ? null : listFacturi.get(i).getPozitie());
 				listEtape.add(etapa);
 			}
 
@@ -277,6 +277,8 @@ public class AfisEtape extends Activity implements BorderouriDAOListener, Operat
 				if (!ultimaEtapaId.equals(listEtape.get(listEtape.size() - 1).getCodClient()))
 					stopTimerTask();
 			}
+
+			Collections.sort(listEtape);
 
 			etapeAdapter.setListEtape(listEtape);
 			listViewEtape.setAdapter(etapeAdapter);

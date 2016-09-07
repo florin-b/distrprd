@@ -1,6 +1,9 @@
 package com.distributie.adapters;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import android.content.Context;
@@ -17,16 +20,19 @@ import com.distributie.beans.Etapa;
 import com.distributie.beans.EvenimentNou;
 import com.distributie.dialog.CustomAlertDialog;
 import com.distributie.dialog.CustomInfoDialog;
+import com.distributie.dialog.PozitieLivrareDialog;
 import com.distributie.enums.EnumNetworkStatus;
 import com.distributie.enums.EnumOpConfirm;
 import com.distributie.enums.EnumOperatiiEvenimente;
 import com.distributie.enums.EnumTipEtapa;
 import com.distributie.enums.TipEveniment;
+import com.distributie.helpers.BorderouriHelper;
 import com.distributie.listeners.AlertDialogListener;
 import com.distributie.listeners.BorderouriListener;
 import com.distributie.listeners.OperatiiBorderouriListener;
 import com.distributie.listeners.OperatiiEtapeListener;
 import com.distributie.listeners.OperatiiEvenimenteListener;
+import com.distributie.listeners.PozitieLivrareListener;
 import com.distributie.model.OperatiiBorderouriDAOImpl;
 import com.distributie.model.OperatiiEvenimente;
 import com.distributie.model.UserInfo;
@@ -36,22 +42,32 @@ import com.distributie.utils.MapUtils;
 import com.distributie.view.R;
 import com.google.android.gms.maps.model.LatLng;
 
-public class EtapeAdapter extends BaseAdapter implements OperatiiEvenimenteListener, OperatiiBorderouriListener, AlertDialogListener {
+public class EtapeAdapter extends BaseAdapter implements OperatiiEvenimenteListener, OperatiiBorderouriListener, AlertDialogListener, PozitieLivrareListener {
 
 	private List<Etapa> listEtape;
 	private Context context;
 	private OperatiiEvenimente opEvenimente;
 	private ViewHolder currentView;
 	private int currentPosition;
+	private int btnPositionPosition;
 	private Etapa etapaCurenta;
 	private OperatiiBorderouriDAOImpl opBorderouri;
 	private CustomAlertDialog alertDialog;
 	private OperatiiEtapeListener etapeListener;
 	private BorderouriListener borderouriListener;
+	private PozitieLivrareDialog pozitieLivrareDialog;
+	private List<String> pozitiiDisponibile;
 
 	public EtapeAdapter(Context context, List<Etapa> listEtape) {
 		this.context = context;
 		this.listEtape = listEtape;
+
+		int width = (int) (context.getResources().getDisplayMetrics().widthPixels * 0.40);
+		int height = (int) (context.getResources().getDisplayMetrics().heightPixels * 0.60);
+
+		pozitieLivrareDialog = new PozitieLivrareDialog(context);
+		pozitieLivrareDialog.setPozitieLivrareListener(EtapeAdapter.this);
+		pozitieLivrareDialog.getWindow().setLayout(width, height);
 
 		opEvenimente = new OperatiiEvenimente(context);
 		opEvenimente.setOperatiiEvenimenteListener(EtapeAdapter.this);
@@ -64,12 +80,15 @@ public class EtapeAdapter extends BaseAdapter implements OperatiiEvenimenteListe
 
 		checkEtapeRamase();
 
+		setPozitiiLivrare();
+
 	}
 
 	static class ViewHolder {
 		public TextView textNrCrt, textNumeEtapa, textDescEtapa, textDocument;
 		public Button btnSalvareEveniment, btnAnulareEveniment;
-		public ImageView checkedIcon;
+		public ImageView checkedIcon, clearIcon;
+		public TextView textPozitie, textDescPozitie;
 
 	}
 
@@ -93,6 +112,9 @@ public class EtapeAdapter extends BaseAdapter implements OperatiiEvenimenteListe
 			viewHolder.btnAnulareEveniment = (Button) convertView.findViewById(R.id.btnAnulareEveniment);
 			viewHolder.textDocument = (TextView) convertView.findViewById(R.id.textDocument);
 			viewHolder.checkedIcon = (ImageView) convertView.findViewById(R.id.checkedIcon);
+			viewHolder.textPozitie = (TextView) convertView.findViewById(R.id.textPozitie);
+			viewHolder.clearIcon = (ImageView) convertView.findViewById(R.id.clearIcon);
+			viewHolder.textDescPozitie = (TextView) convertView.findViewById(R.id.textDescPozitie);
 
 			convertView.setTag(viewHolder);
 
@@ -106,19 +128,31 @@ public class EtapeAdapter extends BaseAdapter implements OperatiiEvenimenteListe
 			viewHolder.btnSalvareEveniment.setText("SOSIRE");
 		} else {
 			viewHolder.btnSalvareEveniment.setText(etapa.getNume());
-
 		}
+
+		setPozitieLivrareVisibility(viewHolder, etapa);
 
 		currentView = viewHolder;
 		currentPosition = position;
 
 		setSaveButtonsStatus(currentPosition, currentView);
 
-		viewHolder.textNrCrt.setText(String.valueOf(position + 1) + ".");
 		viewHolder.textNumeEtapa.setText(etapa.getNume());
 		viewHolder.textDescEtapa.setText(etapa.getDescriere());
 
 		viewHolder.textDocument.setText("Nr. borderou " + etapa.getDocument());
+		viewHolder.textPozitie.setText(etapa.getPozitie() == null ? "?" : etapa.getPozitie());
+
+		viewHolder.textPozitie.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				btnPositionPosition = position;
+				setPozitiiLivrare();
+				pozitieLivrareDialog.show();
+
+			}
+		});
 
 		viewHolder.btnSalvareEveniment.setOnClickListener(new OnClickListener() {
 			@Override
@@ -131,6 +165,17 @@ public class EtapeAdapter extends BaseAdapter implements OperatiiEvenimenteListe
 			@Override
 			public void onClick(View arg0) {
 				cancelEvent(position, viewHolder);
+			}
+		});
+
+		viewHolder.clearIcon.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				listEtape.get(position).setPozitie(null);
+				notifyDataSetChanged();
+				setPozitiiLivrare();
+
 			}
 		});
 
@@ -158,6 +203,19 @@ public class EtapeAdapter extends BaseAdapter implements OperatiiEvenimenteListe
 
 	}
 
+	private void setPozitieLivrareVisibility(ViewHolder viewHolder, Etapa etapa) {
+		if (etapa.getNume().contains("INCEPUT") || etapa.getNume().contains("INCARCARE")) {
+			viewHolder.clearIcon.setVisibility(View.INVISIBLE);
+			viewHolder.textDescPozitie.setVisibility(View.INVISIBLE);
+			viewHolder.textPozitie.setVisibility(View.INVISIBLE);
+		} else {
+			viewHolder.clearIcon.setVisibility(View.VISIBLE);
+			viewHolder.textDescPozitie.setVisibility(View.VISIBLE);
+			viewHolder.textPozitie.setVisibility(View.VISIBLE);
+		}
+
+	}
+
 	private void getPozitieCurenta() {
 
 		HashMap<String, String> params = new HashMap<String, String>();
@@ -177,7 +235,7 @@ public class EtapeAdapter extends BaseAdapter implements OperatiiEvenimenteListe
 			setSfarsitIncarcareEv(etapaCurenta.getDocument());
 			break;
 		case START_BORD:
-			saveStartStopEvent(etapaCurenta.getTipEtapa());
+			checkOrdonareEtape();
 			break;
 		case STOP_BORD:
 			showSfarsitCursaAlertDialog();
@@ -190,6 +248,16 @@ public class EtapeAdapter extends BaseAdapter implements OperatiiEvenimenteListe
 
 		}
 
+	}
+
+	private void checkOrdonareEtape() {
+		if (BorderouriHelper.hasEtapeOrdonate(listEtape))
+			saveStartStopEvent(etapaCurenta.getTipEtapa());
+		else {
+			CustomInfoDialog infoDialog = new CustomInfoDialog(context);
+			infoDialog.setInfoText("Completati mai intai ordinea livrarilor.");
+			infoDialog.show();
+		}
 	}
 
 	private void checkEtapeRamase() {
@@ -294,7 +362,7 @@ public class EtapeAdapter extends BaseAdapter implements OperatiiEvenimenteListe
 		newEventData.put("codAdresa", " ");
 		newEventData.put("eveniment", tipEveniment);
 
-		newEvent.saveNewEventBorderou(newEventData);
+		newEvent.saveNewEventBorderou(newEventData, listEtape);
 
 	}
 
@@ -357,7 +425,7 @@ public class EtapeAdapter extends BaseAdapter implements OperatiiEvenimenteListe
 				rangeOk = true;
 			}
 
-			if (latlngClient.latitude != 0) {
+			if (latlngClient != null && latlngClient.latitude != 0) {
 				distClient = MapUtils.distanceXtoY(latlngCurent.latitude, latlngCurent.longitude, latlngClient.latitude, latlngClient.longitude, "K");
 
 				if (distClient > Constants.RAZA_SOSIRE_CLIENT_KM) {
@@ -386,6 +454,39 @@ public class EtapeAdapter extends BaseAdapter implements OperatiiEvenimenteListe
 
 	}
 
+	private void setPozitiiLivrare() {
+
+		int totalPozitii = listEtape.size();
+
+		pozitiiDisponibile = new ArrayList<String>();
+
+		int count = 1;
+		for (Etapa etapa : listEtape) {
+			if (!etapa.getTipEtapa().equals(EnumTipEtapa.SFARSIT_INCARCARE) && !etapa.getTipEtapa().equals(EnumTipEtapa.START_BORD)) {
+				pozitiiDisponibile.add(String.valueOf(count));
+				count++;
+			}
+
+		}
+
+		Iterator<String> iterator = pozitiiDisponibile.iterator();
+
+		while (iterator.hasNext()) {
+			String currentPos = iterator.next();
+
+			for (int j = 0; j < totalPozitii; j++) {
+				if (currentPos.equals(listEtape.get(j).getPozitie())) {
+					iterator.remove();
+					break;
+				}
+
+			}
+		}
+
+		pozitieLivrareDialog.setPozitiiLivrare(pozitiiDisponibile);
+
+	}
+
 	private void handleSavedEvent() {
 
 		if (listEtape.get(currentPosition).getTipEtapa() == EnumTipEtapa.STOP_BORD) {
@@ -398,6 +499,8 @@ public class EtapeAdapter extends BaseAdapter implements OperatiiEvenimenteListe
 			checkEtapeRamase();
 
 		}
+
+		notifyDataSetChanged();
 	}
 
 	private void handleCancelEvent() {
@@ -428,6 +531,30 @@ public class EtapeAdapter extends BaseAdapter implements OperatiiEvenimenteListe
 		return 0;
 	}
 
+	private void setPozitieEtapa(String pozitie) {
+		listEtape.get(btnPositionPosition).setPozitie(pozitie);
+
+		pozitiiDisponibile.remove(pozitie);
+
+		// alocare automata a ultimei etape
+		if (pozitiiDisponibile.size() == 1) {
+			for (Etapa etapa : listEtape) {
+
+				if (!etapa.getTipEtapa().equals(EnumTipEtapa.SFARSIT_INCARCARE) && !etapa.getTipEtapa().equals(EnumTipEtapa.START_BORD)) {
+
+					if (etapa.getPozitie() == null) {
+						etapa.setPozitie(pozitiiDisponibile.get(0));
+						break;
+					}
+				}
+			}
+		}
+
+		Collections.sort(listEtape);
+		notifyDataSetChanged();
+
+	}
+
 	@Override
 	public void opEventComplete(String result, EnumOperatiiEvenimente methodName) {
 		switch (methodName) {
@@ -448,6 +575,7 @@ public class EtapeAdapter extends BaseAdapter implements OperatiiEvenimenteListe
 			break;
 		case CANCEL_EVENT:
 			handleCancelEvent();
+			notifyDataSetChanged();
 			break;
 		case GET_POZITIE:
 			computeClientDistance(result);
@@ -471,6 +599,12 @@ public class EtapeAdapter extends BaseAdapter implements OperatiiEvenimenteListe
 		default:
 			break;
 		}
+
+	}
+
+	@Override
+	public void pozitieSelected(String pozitie) {
+		setPozitieEtapa(pozitie);
 
 	}
 

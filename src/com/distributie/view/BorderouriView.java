@@ -418,7 +418,7 @@ public class BorderouriView extends Activity implements CustomSpinnerListener, B
 			newEventData.put("codAdresa", " ");
 			newEventData.put("eveniment", CurrentStatus.getInstance().getEveniment());
 
-			newEvent.saveNewEventBorderou(newEventData);
+			newEvent.saveNewEventBorderou(newEventData, null);
 
 		} catch (Exception e) {
 			Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_SHORT).show();
