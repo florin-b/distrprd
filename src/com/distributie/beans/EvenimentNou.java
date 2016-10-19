@@ -18,6 +18,7 @@ public class EvenimentNou implements Serializable {
 	private TipEveniment tipEveniment;
 	private String data;
 	private String ora;
+	private String bordParent;
 
 	public String getCodSofer() {
 		return codSofer;
@@ -83,10 +84,18 @@ public class EvenimentNou implements Serializable {
 		this.ora = ora;
 	}
 
+	public String getBordParent() {
+		return bordParent;
+	}
+
+	public void setBordParent(String bordParent) {
+		this.bordParent = bordParent;
+	}
+
 	@Override
 	public String toString() {
 		return "EvenimentNou [codSofer=" + codSofer + ", document=" + document + ", client=" + client + ", codAdresa=" + codAdresa + ", eveniment=" + eveniment
-				+ ", tipEveniment=" + tipEveniment + ", data=" + data + ", ora=" + ora + "]";
+				+ ", tipEveniment=" + tipEveniment + ", data=" + data + ", ora=" + ora + ", bordParent=" + bordParent + "]";
 	}
 
 }

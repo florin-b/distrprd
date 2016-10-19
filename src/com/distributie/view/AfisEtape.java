@@ -19,6 +19,8 @@ import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -53,6 +55,7 @@ public class AfisEtape extends Activity implements BorderouriDAOListener, Operat
 	private TimerTask timerTask;
 	private String ultimaEtapaId;
 	private Date sfarsitBordDate;
+	private Button refreshListEtape;
 
 	private Handler handler = new Handler();
 
@@ -89,6 +92,22 @@ public class AfisEtape extends Activity implements BorderouriDAOListener, Operat
 		textInfo = (TextView) findViewById(R.id.textInfo);
 		textInfo.setVisibility(View.GONE);
 
+		refreshListEtape = (Button) findViewById(R.id.refreshListEtape);
+		refreshListEtape.setVisibility(View.GONE);
+
+		setListenerRefreshEtapeBtn();
+
+	}
+
+	private void setListenerRefreshEtapeBtn() {
+		refreshListEtape.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				getBorderouri();
+
+			}
+		});
 	}
 
 	private void startTimerTask() {
@@ -124,6 +143,7 @@ public class AfisEtape extends Activity implements BorderouriDAOListener, Operat
 
 	public void getBorderouri() {
 
+		listEtape.clear();
 		checkBordScanningTime();
 
 		BorderouriDAOImpl bord = BorderouriDAOImpl.getInstance(this);
@@ -186,6 +206,7 @@ public class AfisEtape extends Activity implements BorderouriDAOListener, Operat
 		} else {
 			listViewEtape.setVisibility(View.GONE);
 			textInfo.setVisibility(View.VISIBLE);
+			refreshListEtape.setVisibility(View.VISIBLE);
 
 		}
 
@@ -218,14 +239,16 @@ public class AfisEtape extends Activity implements BorderouriDAOListener, Operat
 
 		}
 
-		etapa = new Etapa();
-		etapa.setTipEtapa(EnumTipEtapa.START_BORD);
-		etapa.setNume("Inceput cursa");
-		etapa.setPos(listEtape.size());
-		etapa.setDocument(borderouCurent.getNumarBorderou());
-		etapa.setFactura(new Factura());
+		if (borderouCurent.getBordParent().equals("-1")) {
+			etapa = new Etapa();
+			etapa.setTipEtapa(EnumTipEtapa.START_BORD);
+			etapa.setNume("Inceput cursa");
+			etapa.setPos(listEtape.size());
+			etapa.setDocument(borderouCurent.getNumarBorderou());
+			etapa.setFactura(new Factura());
 
-		listEtape.add(etapa);
+			listEtape.add(etapa);
+		}
 
 		getFacturiBorderou();
 
@@ -268,9 +291,6 @@ public class AfisEtape extends Activity implements BorderouriDAOListener, Operat
 				}
 			}
 
-			listEtape.get(listEtape.size() - 1).setTipEtapa(EnumTipEtapa.STOP_BORD);
-			listEtape.get(listEtape.size() - 1).setObservatii("Sfarsit cursa");
-
 			if (ultimaEtapaId == null)
 				ultimaEtapaId = listEtape.get(listEtape.size() - 1).getCodClient();
 			else {
@@ -278,11 +298,40 @@ public class AfisEtape extends Activity implements BorderouriDAOListener, Operat
 					stopTimerTask();
 			}
 
+			setAutoNrEtapa(listEtape);
+
 			Collections.sort(listEtape);
 
+			listEtape.get(listEtape.size() - 1).setTipEtapa(EnumTipEtapa.STOP_BORD);
+			listEtape.get(listEtape.size() - 1).setObservatii("Sfarsit cursa");
+
 			etapeAdapter.setListEtape(listEtape);
+			etapeAdapter.setBorderou(borderouCurent);
 			listViewEtape.setAdapter(etapeAdapter);
 
+		}
+
+	}
+
+	private void setAutoNrEtapa(List<Etapa> listEtape) {
+
+		if (listEtape.size() == 1) {
+			listEtape.get(0).setPozitie("1");
+			listEtape.get(0).setTipEtapa(EnumTipEtapa.STOP_BORD);
+		}
+
+		if (listEtape.size() == 2) {
+			if (listEtape.get(0).getTipEtapa() == EnumTipEtapa.START_BORD) {
+				listEtape.get(1).setPozitie("1");
+				listEtape.get(1).setTipEtapa(EnumTipEtapa.STOP_BORD);
+			}
+		}
+
+		if (listEtape.size() == 3) {
+			if (listEtape.get(1).getTipEtapa() == EnumTipEtapa.START_BORD) {
+				listEtape.get(2).setPozitie("1");
+				listEtape.get(2).setTipEtapa(EnumTipEtapa.STOP_BORD);
+			}
 		}
 
 	}

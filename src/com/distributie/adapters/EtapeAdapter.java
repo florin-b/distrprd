@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.distributie.beans.Borderou;
 import com.distributie.beans.Etapa;
 import com.distributie.beans.EvenimentNou;
 import com.distributie.dialog.CustomAlertDialog;
@@ -57,6 +58,7 @@ public class EtapeAdapter extends BaseAdapter implements OperatiiEvenimenteListe
 	private BorderouriListener borderouriListener;
 	private PozitieLivrareDialog pozitieLivrareDialog;
 	private List<String> pozitiiDisponibile;
+	private Borderou borderou;
 
 	public EtapeAdapter(Context context, List<Etapa> listEtape) {
 		this.context = context;
@@ -95,6 +97,10 @@ public class EtapeAdapter extends BaseAdapter implements OperatiiEvenimenteListe
 	public void setListEtape(List<Etapa> listEtape) {
 		this.listEtape = listEtape;
 		notifyDataSetChanged();
+	}
+
+	public void setBorderou(Borderou borderou) {
+		this.borderou = borderou;
 	}
 
 	@Override
@@ -219,7 +225,7 @@ public class EtapeAdapter extends BaseAdapter implements OperatiiEvenimenteListe
 	private void getPozitieCurenta() {
 
 		HashMap<String, String> params = new HashMap<String, String>();
-		params.put("nrBorderou", listEtape.get(currentPosition).getDocument());
+		params.put("nrBorderou", etapaCurenta.getDocument());
 
 		opBorderouri.getPozitieCurenta(params);
 	}
@@ -280,10 +286,12 @@ public class EtapeAdapter extends BaseAdapter implements OperatiiEvenimenteListe
 
 		}
 
-		if (etapeRamase <= 2 && listEtape.size() > 0) {
-			if (borderouriListener != null)
-				borderouriListener.verificaBordeoruri();
-		}
+		// de verificat in noul context de ordonare a etapelor
+		/*
+		 * if (etapeRamase <= 2 && listEtape.size() > 0) { if
+		 * (borderouriListener != null) borderouriListener.verificaBordeoruri();
+		 * }
+		 */
 
 	}
 
@@ -304,13 +312,14 @@ public class EtapeAdapter extends BaseAdapter implements OperatiiEvenimenteListe
 
 		EvenimentNou ev = new EvenimentNou();
 		ev.setCodSofer(UserInfo.getInstance().getId());
-		ev.setDocument(listEtape.get(currentPosition).getDocument());
-		ev.setClient(listEtape.get(currentPosition).getCodClient());
-		ev.setCodAdresa(listEtape.get(currentPosition).getCodAdresaClient());
+		ev.setDocument(etapaCurenta.getDocument());
+		ev.setClient(etapaCurenta.getCodClient());
+		ev.setCodAdresa(etapaCurenta.getCodAdresaClient());
 		ev.setEveniment("0");
 		ev.setTipEveniment(TipEveniment.NOU);
 		ev.setData(DateUtils.getCurrentDate());
 		ev.setOra(DateUtils.getCurrentTime());
+		ev.setBordParent(borderou.getBordParent());
 
 		opBorderouri.saveNewEventClient(ev);
 
@@ -320,6 +329,8 @@ public class EtapeAdapter extends BaseAdapter implements OperatiiEvenimenteListe
 
 		alertDialog.setTipOperatie(EnumOpConfirm.SOSIRE);
 		alertDialog.setAlertText("Confirmati anularea ?");
+		alertDialog.setOKButtonText("Da");
+		alertDialog.setCancelButtonText("Nu");
 		alertDialog.show();
 
 	}
@@ -327,40 +338,75 @@ public class EtapeAdapter extends BaseAdapter implements OperatiiEvenimenteListe
 	private void showSfarsitCursaAlertDialog() {
 
 		if (hasStartCursa()) {
-			alertDialog.setTipOperatie(EnumOpConfirm.SFARSIT_CURSA);
-			alertDialog.setAlertText("Aceasta operatie nu poate fi anulata. Borderoul curent nu va mai putea fi modificat. Confirmati sfarsit cursa ?");
-			alertDialog.show();
+			if (areToateDescarcarile()) {
+				alertDialog.setTipOperatie(EnumOpConfirm.SFARSIT_CURSA);
+				alertDialog.setAlertText("Aceasta operatie nu poate fi anulata. Borderoul curent nu va mai putea fi modificat. Confirmati sfarsit cursa ?");
+				alertDialog.setOKButtonText("Da");
+				alertDialog.setCancelButtonText("Nu");
+				alertDialog.show();
+			} else {
+				alertDialog.setTipOperatie(EnumOpConfirm.CURSA_INCOMPLETA);
+				alertDialog.setAlertText("Ati ajuns la ultimul client dar nu ati livrat la toti clientii. Continuati livrarea ?");
+				alertDialog.setOKButtonText("Da");
+				alertDialog.setCancelButtonText("Nu. Confirm sfarsit cursa.");
+				alertDialog.show();
+			}
 		}
+
+	}
+
+	private boolean areToateDescarcarile() {
+
+		for (Etapa etapa : listEtape) {
+			if (etapa.getTipEtapa() == EnumTipEtapa.SOSIRE)
+				if (!etapa.isSalvata())
+					return false;
+		}
+
+		return true;
 
 	}
 
 	private boolean hasStartCursa() {
 
-		for (Etapa etapa : listEtape) {
-			if (etapa.getTipEtapa() == EnumTipEtapa.START_BORD && !etapa.isSalvata())
-				return false;
-		}
-
+		if (borderou.getBordParent().equals("-1"))
+			for (Etapa etapa : listEtape) {
+				if (etapa.getTipEtapa() == EnumTipEtapa.START_BORD && !etapa.isSalvata())
+					return false;
+			}
+		else
+			for (Etapa etapa : listEtape) {
+				if (etapa.getPozitie() == null)
+					return false;
+			}
 		return true;
 	}
 
 	private void saveStartStopEvent(EnumTipEtapa tipEtapa) {
 
 		String tipEveniment = "";
+		String client = etapaCurenta.getDocument();
+		String codAdresa = " ";
+
 		if (tipEtapa == EnumTipEtapa.START_BORD)
 			tipEveniment = "0";
-		else if (tipEtapa == EnumTipEtapa.STOP_BORD)
+		else if (tipEtapa == EnumTipEtapa.STOP_BORD) {
 			tipEveniment = "P";
+			client = etapaCurenta.getCodClient();
+			codAdresa = etapaCurenta.getCodAdresaClient();
+		}
 
 		OperatiiBorderouriDAOImpl newEvent = new OperatiiBorderouriDAOImpl(context);
 		newEvent.setEventListener(EtapeAdapter.this);
 
 		HashMap<String, String> newEventData = new HashMap<String, String>();
 		newEventData.put("codSofer", UserInfo.getInstance().getId());
-		newEventData.put("document", listEtape.get(currentPosition).getDocument());
-		newEventData.put("client", listEtape.get(currentPosition).getDocument());
-		newEventData.put("codAdresa", " ");
+		newEventData.put("document", etapaCurenta.getDocument());
+		newEventData.put("client", client);
+		newEventData.put("codAdresa", codAdresa);
 		newEventData.put("eveniment", tipEveniment);
+		newEventData.put("bordParent", borderou.getBordParent());
+		newEventData.put("evBord", tipEtapa.toString());
 
 		newEvent.saveNewEventBorderou(newEventData, listEtape);
 
@@ -399,7 +445,7 @@ public class EtapeAdapter extends BaseAdapter implements OperatiiEvenimenteListe
 
 		// sf. incarcare produs
 		if (result.contains("SOF")) {
-			listEtape.get(currentPosition).setSalvata(true);
+			etapaCurenta.setSalvata(true);
 			setSaveButtonsStatus(currentPosition, currentView);
 
 		} else {
@@ -420,7 +466,7 @@ public class EtapeAdapter extends BaseAdapter implements OperatiiEvenimenteListe
 			LatLng latlngClient = null;
 
 			try {
-				latlngClient = MapUtils.geocodeSimpleAddress(listEtape.get(currentPosition).getFactura().getAdresaClient(), context);
+				latlngClient = MapUtils.geocodeSimpleAddress(etapaCurenta.getFactura().getAdresaClient(), context);
 			} catch (Exception e) {
 				rangeOk = true;
 			}
@@ -489,11 +535,11 @@ public class EtapeAdapter extends BaseAdapter implements OperatiiEvenimenteListe
 
 	private void handleSavedEvent() {
 
-		if (listEtape.get(currentPosition).getTipEtapa() == EnumTipEtapa.STOP_BORD) {
+		if (etapaCurenta.getTipEtapa() == EnumTipEtapa.STOP_BORD) {
 			if (etapeListener != null)
 				etapeListener.borderouTerminat();
 		} else {
-			listEtape.get(currentPosition).setSalvata(true);
+			etapaCurenta.setSalvata(true);
 			setSaveButtonsStatus(currentPosition, currentView);
 
 			checkEtapeRamase();
@@ -504,7 +550,7 @@ public class EtapeAdapter extends BaseAdapter implements OperatiiEvenimenteListe
 	}
 
 	private void handleCancelEvent() {
-		listEtape.get(currentPosition).setSalvata(false);
+		etapaCurenta.setSalvata(false);
 		setSaveButtonsStatus(currentPosition, currentView);
 	}
 
@@ -548,10 +594,76 @@ public class EtapeAdapter extends BaseAdapter implements OperatiiEvenimenteListe
 					}
 				}
 			}
+
+			setPozitieSfarsitCursa();
+
 		}
 
 		Collections.sort(listEtape);
 		notifyDataSetChanged();
+
+	}
+
+	private void setPozitieSfarsitCursa() {
+		Collections.sort(listEtape);
+
+		for (Etapa etapa : listEtape) {
+			if (etapa.getTipEtapa() == EnumTipEtapa.STOP_BORD) {
+				etapa.setTipEtapa(EnumTipEtapa.SOSIRE);
+				etapa.setObservatii("");
+			}
+		}
+
+		listEtape.get(listEtape.size() - 1).setTipEtapa(EnumTipEtapa.STOP_BORD);
+		listEtape.get(listEtape.size() - 1).setObservatii("Sfarsit cursa");
+
+	}
+
+	private void schimbaSfarsitCursa() {
+		/*
+		 * currentView = viewHolder; currentPosition = position; etapaCurenta =
+		 * listEtape.get(position);
+		 */
+
+
+
+		int ordMax = -1;
+		int poz = 0;
+		for (Etapa etapa : listEtape) {
+			if (!etapa.isSalvata() && etapa.getTipEtapa() != EnumTipEtapa.STOP_BORD)
+				ordMax = poz;
+
+			poz++;
+		}
+
+		if (ordMax != -1) {
+			String pozMaxEtapa = listEtape.get(ordMax).getPozitie();
+			String pozSelEtapa = etapaCurenta.getPozitie();
+
+			Etapa etapaOld = etapaCurenta;
+
+			etapaCurenta.setTipEtapa(EnumTipEtapa.SOSIRE);
+			etapaCurenta.setObservatii("");
+			etapaCurenta.setPozitie(pozMaxEtapa);
+
+			Etapa etapaNew = listEtape.get(ordMax);
+
+			listEtape.get(ordMax).setTipEtapa(EnumTipEtapa.STOP_BORD);
+			listEtape.get(ordMax).setObservatii("Sfarsit cursa");
+			listEtape.get(ordMax).setPozitie(pozSelEtapa);
+
+			listEtape.set(currentPosition, etapaNew);
+
+			listEtape.set(ordMax, etapaOld);
+
+			Collections.sort(listEtape);
+
+		}
+
+		
+		notifyDataSetChanged();
+
+		performSaveNewEventClienti();
 
 	}
 
@@ -594,6 +706,21 @@ public class EtapeAdapter extends BaseAdapter implements OperatiiEvenimenteListe
 			dealCancelEvent();
 			break;
 		case SFARSIT_CURSA:
+			saveStartStopEvent(etapaCurenta.getTipEtapa());
+			break;
+		case CURSA_INCOMPLETA:
+			schimbaSfarsitCursa();
+			break;
+		default:
+			break;
+		}
+
+	}
+
+	@Override
+	public void alertDialogCancel(EnumOpConfirm tipOperatie) {
+		switch (tipOperatie) {
+		case CURSA_INCOMPLETA:
 			saveStartStopEvent(etapaCurenta.getTipEtapa());
 			break;
 		default:

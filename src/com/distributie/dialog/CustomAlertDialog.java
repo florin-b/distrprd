@@ -12,7 +12,6 @@ import com.distributie.view.R;
 
 public class CustomAlertDialog extends Dialog {
 
-	private Context context;
 	private TextView textAlert;
 	private Button btnOk, btnCancel;
 	private AlertDialogListener listener;
@@ -22,7 +21,6 @@ public class CustomAlertDialog extends Dialog {
 	public CustomAlertDialog(Context context) {
 		super(context);
 
-		this.context = context;
 		setContentView(R.layout.alert_dialog);
 		setTitle("Atentie!");
 
@@ -49,6 +47,14 @@ public class CustomAlertDialog extends Dialog {
 
 	}
 
+	public void setOKButtonText(String buttonText) {
+		btnOk.setText(buttonText);
+	}
+
+	public void setCancelButtonText(String buttonText) {
+		btnCancel.setText(buttonText);
+	}
+
 	@Override
 	public void show() {
 		textAlert.setText(alertText);
@@ -73,6 +79,8 @@ public class CustomAlertDialog extends Dialog {
 
 			@Override
 			public void onClick(View arg0) {
+				if (listener != null)
+					listener.alertDialogCancel(tipOperatie);
 				dismiss();
 
 			}

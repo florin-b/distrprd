@@ -52,6 +52,7 @@ public class HandleJSONData {
 				unBorderou.setDataEmiterii(borderouObject.getString("dataEmiterii"));
 				unBorderou.setEvenimentBorderou(borderouObject.getString("evenimentBorderou"));
 				unBorderou.setTipBorderou(borderouObject.getString("tipBorderou"));
+				unBorderou.setBordParent(borderouObject.getString("bordParent"));
 				objectsList.add(unBorderou);
 
 			}

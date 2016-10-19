@@ -9,6 +9,7 @@ public class Borderou {
 	private String evenimentBorderou;
 	private String tipBorderou;
 	private TipBorderou stringTipBorderou;
+	private String bordParent;
 
 	public Borderou() {
 
@@ -44,6 +45,14 @@ public class Borderou {
 
 	public void setTipBorderou(String tipBorderou) {
 		this.tipBorderou = tipBorderou;
+	}
+
+	public String getBordParent() {
+		return bordParent;
+	}
+
+	public void setBordParent(String bordParent) {
+		this.bordParent = bordParent;
 	}
 
 	public TipBorderou getStandardTipBorderou() {
