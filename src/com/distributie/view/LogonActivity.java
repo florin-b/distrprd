@@ -11,6 +11,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.util.List;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -35,22 +36,29 @@ import android.telephony.TelephonyManager;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.distributie.adapters.SoferiAdapter;
+import com.distributie.beans.BeanSofer;
 import com.distributie.beans.InitStatus;
 import com.distributie.enums.EnumOperatiiLogon;
+import com.distributie.listeners.SoferiListener;
 import com.distributie.model.HandleJSONData;
 import com.distributie.model.LogonImpl;
 import com.distributie.model.LogonListener;
+import com.distributie.model.OperatiiSoferi;
 import com.distributie.model.UserInfo;
 
-public class LogonActivity extends Activity implements LogonListener {
+public class LogonActivity extends Activity implements LogonListener, SoferiListener {
 
 	int val = 0;
-
+test
 	ProgressBar progressBarWheel;
 	TextView txtNumeSofer, txtDeviceId;
 	private Handler logonHandler = new Handler();
@@ -59,6 +67,9 @@ public class LogonActivity extends Activity implements LogonListener {
 	private boolean allowLogon = false;
 	ImageView logonImage;
 	private Timer myTimer;
+
+	private OperatiiSoferi opSoferi;
+	private Spinner spinnerSoferi;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -92,6 +103,10 @@ public class LogonActivity extends Activity implements LogonListener {
 
 			buildVer = String.valueOf(pInfo.versionCode);
 
+			spinnerSoferi = (Spinner) findViewById(R.id.spinnerSoferi);
+			//spinnerSoferi.setVisibility(View.VISIBLE);
+			setSpinnerSoferiListener();
+
 			progressBarWheel = (ProgressBar) findViewById(R.id.progress_bar_wheel);
 			progressBarWheel.setVisibility(View.INVISIBLE);
 			logonImage = (ImageView) findViewById(R.id.logonImage);
@@ -103,6 +118,10 @@ public class LogonActivity extends Activity implements LogonListener {
 			String deviceId = getDeviceId();
 
 			txtDeviceId.setText(deviceId.replaceAll(".{3}", "$0 "));
+
+			opSoferi = new OperatiiSoferi(this);
+			opSoferi.setSoferiListener(this);
+			opSoferi.getSoferi();
 
 			getCodSofer(deviceId);
 
@@ -500,6 +519,33 @@ public class LogonActivity extends Activity implements LogonListener {
 		default:
 			break;
 		}
+
+	}
+
+	private void setSpinnerSoferiListener() {
+		spinnerSoferi.setOnItemSelectedListener(new OnItemSelectedListener() {
+
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+				BeanSofer sofer = (BeanSofer) parent.getAdapter().getItem(position);
+				getCodSofer(sofer.getCodTableta());
+
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> arg0) {
+
+			}
+		});
+	}
+
+	@Override
+	public void soferiComplete(List<BeanSofer> listSoferi) {
+
+		SoferiAdapter soferiAdapter = new SoferiAdapter(getApplicationContext(), listSoferi);
+		spinnerSoferi.setAdapter(soferiAdapter);
+		allowLogon = true;
 
 	}
 

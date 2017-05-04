@@ -13,12 +13,12 @@
         android:layout_width="0dip"
         android:layout_height="match_parent"
         android:layout_marginLeft="100dip"
-        android:layout_weight="0.1"
+        android:layout_weight="0.2"
         android:orientation="vertical" >
 
         <TextView
             style="@style/ShadowText"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="left|center"
             android:gravity="left|center"
@@ -29,6 +29,15 @@
             android:textSize="28sp"
             android:textStyle="bold"
             android:typeface="serif" />
+
+        <Spinner
+            android:id="@+id/spinnerSoferi"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:layout_marginLeft="10dip"
+            android:visibility="gone"
+            android:layout_marginTop="10dip" />
 
         <TextView
             android:id="@+id/txtNumeSofer"
@@ -62,7 +71,7 @@
     <LinearLayout
         android:layout_width="0dip"
         android:layout_height="wrap_content"
-        android:layout_weight="0.1" >
+        android:layout_weight="0.15" >
 
         <ImageView
             android:id="@+id/logonImage"
@@ -70,7 +79,5 @@
             android:layout_height="200dip"
             android:src="@drawable/steering_wheel" />
     </LinearLayout>
-
-   
 
 </LinearLayout>
