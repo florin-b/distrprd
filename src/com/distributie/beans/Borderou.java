@@ -11,6 +11,8 @@ public class Borderou {
 	private TipBorderou stringTipBorderou;
 	private String bordParent;
 	private boolean agentDTI;
+	private String nrAuto;
+	private String codSofer;
 
 	public Borderou() {
 
@@ -88,6 +90,22 @@ public class Borderou {
 
 	public void setAgentDTI(boolean agentDTI) {
 		this.agentDTI = agentDTI;
+	}
+
+	public String getNrAuto() {
+		return nrAuto;
+	}
+
+	public void setNrAuto(String nrAuto) {
+		this.nrAuto = nrAuto;
+	}
+
+	public String getCodSofer() {
+		return codSofer;
+	}
+
+	public void setCodSofer(String codSofer) {
+		this.codSofer = codSofer;
 	}
 
 }

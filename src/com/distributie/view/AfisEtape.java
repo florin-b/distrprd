@@ -23,6 +23,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.distributie.adapters.EtapeAdapter;
 import com.distributie.beans.Borderou;
@@ -174,7 +175,8 @@ public class AfisEtape extends Activity implements BorderouriDAOListener, Operat
 
 		BorderouriDAOImpl bord = BorderouriDAOImpl.getInstance(this);
 		bord.setBorderouEventListener(AfisEtape.this);
-		bord.getBorderouri(UserInfo.getInstance().getId(), "d", "-1");
+		// bord.getBorderouri(UserInfo.getInstance().getId(), "d", "-1");
+		bord.getBorderouriMasina(UserInfo.getInstance().getNrAuto(), UserInfo.getInstance().getId());
 
 	}
 
@@ -464,6 +466,7 @@ public class AfisEtape extends Activity implements BorderouriDAOListener, Operat
 	public void loadComplete(String result, EnumOperatiiBorderou methodName) {
 		switch (methodName) {
 		case GET_BORDEROURI:
+		case GET_BORDEROURI_MASINA:
 			populateListBorderouri(result);
 			break;
 		case GET_FACTURI_BORDEROU:

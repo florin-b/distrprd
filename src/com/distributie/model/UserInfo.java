@@ -14,6 +14,8 @@ public class UserInfo {
 	private String departament;
 	private String tipAcces;
 	private boolean dti;
+	private String nrAuto;
+	private String kmStart;
 
 	private static UserInfo instance = new UserInfo();
 
@@ -86,6 +88,28 @@ public class UserInfo {
 
 	public void setDti(boolean dti) {
 		this.dti = dti;
+	}
+
+	public String getNrAuto() {
+		return nrAuto;
+	}
+
+	public void setNrAuto(String nrAuto) {
+		this.nrAuto = nrAuto;
+	}
+
+	public String getKmStart() {
+		return kmStart;
+	}
+
+	public void setKmStart(String kmStart) {
+		this.kmStart = kmStart;
+	}
+
+	@Override
+	public String toString() {
+		return "UserInfo [nume=" + nume + ", filiala=" + filiala + ", id=" + id + ", unitLog=" + unitLog + ", status=" + status + ", departament="
+				+ departament + ", tipAcces=" + tipAcces + ", dti=" + dti + "]";
 	}
 
 }

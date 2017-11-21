@@ -55,6 +55,8 @@ public class HandleJSONData {
 				unBorderou.setTipBorderou(borderouObject.getString("tipBorderou"));
 				unBorderou.setBordParent(borderouObject.getString("bordParent"));
 				unBorderou.setAgentDTI(Boolean.valueOf(borderouObject.getString("agentDTI")));
+				unBorderou.setNrAuto(borderouObject.getString("nrAuto"));
+				unBorderou.setCodSofer(borderouObject.getString("codSofer"));
 				objectsList.add(unBorderou);
 
 			}

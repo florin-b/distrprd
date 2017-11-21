@@ -110,7 +110,9 @@ public class AsyncTaskWSCall {
 				headerList.add(new HeaderProperty("Authorization", "Basic " + org.kobjects.base64.Base64.encode("bflorin:bflorin".getBytes())));
 				androidHttpTransport.call(ConnectionStrings.getInstance().getNamespace() + methodName, envelope, headerList);
 				Object result = envelope.getResponse();
-				response = result.toString();
+				
+				if (result != null)
+					response = result.toString();
 
 			} catch (ConnectException con) {
 				errMessage = con.toString();

@@ -48,6 +48,7 @@ import com.distributie.adapters.SoferiAdapter;
 import com.distributie.beans.BeanSofer;
 import com.distributie.beans.InitStatus;
 import com.distributie.enums.EnumOperatiiLogon;
+import com.distributie.enums.EnumOperatiiSofer;
 import com.distributie.listeners.SoferiListener;
 import com.distributie.model.HandleJSONData;
 import com.distributie.model.LogonImpl;
@@ -58,7 +59,7 @@ import com.distributie.model.UserInfo;
 public class LogonActivity extends Activity implements LogonListener, SoferiListener {
 
 	int val = 0;
-test
+
 	ProgressBar progressBarWheel;
 	TextView txtNumeSofer, txtDeviceId;
 	private Handler logonHandler = new Handler();
@@ -104,8 +105,8 @@ test
 			buildVer = String.valueOf(pInfo.versionCode);
 
 			spinnerSoferi = (Spinner) findViewById(R.id.spinnerSoferi);
-			//spinnerSoferi.setVisibility(View.VISIBLE);
-			setSpinnerSoferiListener();
+			 spinnerSoferi.setVisibility(View.VISIBLE);
+			 setSpinnerSoferiListener();
 
 			progressBarWheel = (ProgressBar) findViewById(R.id.progress_bar_wheel);
 			progressBarWheel.setVisibility(View.INVISIBLE);
@@ -122,6 +123,8 @@ test
 			opSoferi = new OperatiiSoferi(this);
 			opSoferi.setSoferiListener(this);
 			opSoferi.getSoferi();
+
+			getCodSofer("354795054209066");
 
 			getCodSofer(deviceId);
 
@@ -477,7 +480,17 @@ test
 
 	private void redirectView() {
 
-		Intent nextScreen = new Intent(getApplicationContext(), MainMenu.class);
+		/*
+		 * Intent nextScreen = new Intent(getApplicationContext(),
+		 * MainMenu.class); startActivity(nextScreen); finish();
+		 */
+
+		/*
+		 * Intent nextScreen = new Intent(getApplicationContext(),
+		 * KmMasina.class); startActivity(nextScreen);
+		 */finish();
+
+		Intent nextScreen = new Intent(getApplicationContext(), NrMasina.class);
 		startActivity(nextScreen);
 		finish();
 
@@ -540,12 +553,25 @@ test
 		});
 	}
 
-	@Override
-	public void soferiComplete(List<BeanSofer> listSoferi) {
+	private void showListSoferi(String strSoferi) {
+
+		List<BeanSofer> listSoferi = opSoferi.decodJsonSoferi(strSoferi);
 
 		SoferiAdapter soferiAdapter = new SoferiAdapter(getApplicationContext(), listSoferi);
 		spinnerSoferi.setAdapter(soferiAdapter);
 		allowLogon = true;
+	}
+
+	@Override
+	public void operationSoferiComplete(EnumOperatiiSofer numeOperatie, Object result) {
+		switch (numeOperatie) {
+		case GET_SOFERI:
+			showListSoferi((String) result);
+			break;
+		default:
+			break;
+
+		}
 
 	}
 

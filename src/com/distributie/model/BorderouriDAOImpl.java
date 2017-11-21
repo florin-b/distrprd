@@ -35,6 +35,18 @@ public class BorderouriDAOImpl implements BorderouriDAO, AsyncTaskListener {
 		performOperation();
 
 	}
+	
+	
+	@Override
+	public void getBorderouriMasina(String nrMasina, String codSofer) {
+		params = new HashMap<String, String>();
+		params.put("nrMasina", nrMasina);
+		params.put("codSofer", codSofer);
+		numeComanda = EnumOperatiiBorderou.GET_BORDEROURI_MASINA;
+		performOperation();
+
+	}
+	
 
 	@Override
 	public void getFacturiBorderou(String nrBorderou, TipBorderou tipBorderou) {

@@ -1,9 +1,7 @@
 package com.distributie.listeners;
 
-import java.util.List;
-
-import com.distributie.beans.BeanSofer;
+import com.distributie.enums.EnumOperatiiSofer;
 
 public interface SoferiListener {
-	void soferiComplete(List<BeanSofer> listSoferi);
+	void operationSoferiComplete(EnumOperatiiSofer numeOperatie, Object result);
 }

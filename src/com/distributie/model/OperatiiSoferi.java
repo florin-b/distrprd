@@ -34,6 +34,42 @@ public class OperatiiSoferi implements AsyncTaskListener {
 
 	}
 
+	public void getMasinaSofer(HashMap<String, String> params) {
+		numeOperatie = EnumOperatiiSofer.GET_MASINA;
+		performOperation(numeOperatie, params);
+
+	}
+
+	public void getMasiniFiliala(HashMap<String, String> params) {
+		numeOperatie = EnumOperatiiSofer.GET_MASINI_FILIALA;
+		performOperation(numeOperatie, params);
+
+	}
+
+	public void getKmMasina(HashMap<String, String> params) {
+		numeOperatie = EnumOperatiiSofer.GET_KM_MASINA;
+		performOperation(numeOperatie, params);
+
+	}
+
+	public void adaugaKmMasina(HashMap<String, String> params) {
+		numeOperatie = EnumOperatiiSofer.ADAUGA_KM_MASINA;
+		performOperation(numeOperatie, params);
+
+	}
+
+	public void getKmMasinaDeclarati(HashMap<String, String> params) {
+		numeOperatie = EnumOperatiiSofer.GET_KM_MASINA_DECLARATI;
+		performOperation(numeOperatie, params);
+
+	}
+
+	public void valideazaKmMasina(HashMap<String, String> params) {
+		numeOperatie = EnumOperatiiSofer.VALIDEAZA_KM_MASINA;
+		performOperation(numeOperatie, params);
+
+	}
+
 	private void performOperation(EnumOperatiiSofer numeOperatie, HashMap<String, String> params) {
 		AsyncTaskWSCall call = new AsyncTaskWSCall(numeOperatie.getNume(), params, (AsyncTaskListener) this, context);
 		call.getCallResults();
@@ -47,12 +83,12 @@ public class OperatiiSoferi implements AsyncTaskListener {
 	public void onTaskComplete(String methodName, String result, EnumNetworkStatus networkStatus) {
 
 		if (soferiListener != null) {
-			soferiListener.soferiComplete(decodJsonSoferi(result));
+			soferiListener.operationSoferiComplete(numeOperatie, result);
 		}
 
 	}
 
-	private List<BeanSofer> decodJsonSoferi(String strSoferi) {
+	public List<BeanSofer> decodJsonSoferi(String strSoferi) {
 		List<BeanSofer> listSoferi = new ArrayList<BeanSofer>();
 
 		try {

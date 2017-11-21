@@ -2,7 +2,7 @@ package com.distributie.enums;
 
 public enum EnumOperatiiBorderou {
 	GET_BORDEROURI("getBorderouri"), GET_FACTURI_BORDEROU("getFacturiBorderou"), GET_ARTICOLE_BORDEROU(
-			"getArticoleBorderou");
+			"getArticoleBorderou"), GET_BORDEROURI_MASINA("getBorderouriMasina");
 
 	private String numeComanda;
 
