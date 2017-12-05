@@ -105,8 +105,8 @@ public class LogonActivity extends Activity implements LogonListener, SoferiList
 			buildVer = String.valueOf(pInfo.versionCode);
 
 			spinnerSoferi = (Spinner) findViewById(R.id.spinnerSoferi);
-			 spinnerSoferi.setVisibility(View.VISIBLE);
-			 setSpinnerSoferiListener();
+			// spinnerSoferi.setVisibility(View.VISIBLE);
+			// setSpinnerSoferiListener();
 
 			progressBarWheel = (ProgressBar) findViewById(R.id.progress_bar_wheel);
 			progressBarWheel.setVisibility(View.INVISIBLE);
@@ -123,8 +123,6 @@ public class LogonActivity extends Activity implements LogonListener, SoferiList
 			opSoferi = new OperatiiSoferi(this);
 			opSoferi.setSoferiListener(this);
 			opSoferi.getSoferi();
-
-			getCodSofer("354795054209066");
 
 			getCodSofer(deviceId);
 

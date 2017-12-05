@@ -43,6 +43,8 @@ public final class KmMasina extends Activity implements SoferiListener, Borderou
 
 	private OperatiiSoferi opSoferi;
 
+	private int initKm;
+
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
@@ -204,8 +206,13 @@ public final class KmMasina extends Activity implements SoferiListener, Borderou
 
 	private void saveKmMasina() {
 
-		if (!isKmValid()) {
+		if (isKmEmpty()) {
 			Toast.makeText(getApplicationContext(), "Completati km din bord", Toast.LENGTH_LONG).show();
+			return;
+		}
+
+		if (!isKmValid()) {
+			Toast.makeText(getApplicationContext(), "Acest index este mai mic decat cel anterior.", Toast.LENGTH_LONG).show();
 			return;
 		}
 
@@ -221,9 +228,18 @@ public final class KmMasina extends Activity implements SoferiListener, Borderou
 
 	}
 
-	private boolean isKmValid() {
+	private boolean isKmEmpty() {
+		return textKm.getText().toString().isEmpty();
+	}
 
-		return !textKm.getText().toString().isEmpty();
+	private boolean isKmValid() {
+		int kmSofer = Integer.valueOf(textKm.getText().toString());
+
+		if (kmSofer < initKm)
+			return false;
+
+		return true;
+
 	}
 
 	private void verificaKmSalvati() {
@@ -254,9 +270,15 @@ public final class KmMasina extends Activity implements SoferiListener, Borderou
 		if (textKm.getText().toString().length() > 7)
 			return;
 
-		if (!kmValue.equals("0") || !textKm.getText().toString().isEmpty())
+		if (!kmValue.equals("0") || !textKm.getText().toString().isEmpty()) {
 			textKm.setText(textKm.getText() + kmValue);
 
+		}
+
+	}
+
+	private void setInitKm(String kmValue) {
+		initKm = Integer.valueOf(kmValue);
 	}
 
 	private void isKmMasinaValid(String result) {
@@ -340,6 +362,7 @@ public final class KmMasina extends Activity implements SoferiListener, Borderou
 		switch (numeOperatie) {
 		case GET_KM_MASINA:
 			setKmValue((String) result);
+			setInitKm((String) result);
 			break;
 		case ADAUGA_KM_MASINA:
 			getBorderouMasina();
