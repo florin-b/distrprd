@@ -16,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.distributie.beans.Borderou;
+import com.distributie.beans.StareValidareKm;
 import com.distributie.enums.EnumOperatiiBorderou;
 import com.distributie.enums.EnumOperatiiSofer;
 import com.distributie.listeners.BorderouriDAOListener;
@@ -211,12 +212,8 @@ public final class KmMasina extends Activity implements SoferiListener, Borderou
 			return;
 		}
 
-		if (!isKmValid()) {
-			Toast.makeText(getApplicationContext(), "Acest index este mai mic decat cel anterior.", Toast.LENGTH_LONG).show();
-			return;
-		}
-
-		verificaKmSalvati();
+		
+		valideazaKmIntrodusi();
 
 	}
 
@@ -232,26 +229,14 @@ public final class KmMasina extends Activity implements SoferiListener, Borderou
 		return textKm.getText().toString().isEmpty();
 	}
 
-	private boolean isKmValid() {
-		int kmSofer = Integer.valueOf(textKm.getText().toString());
 
-		if (kmSofer < initKm)
-			return false;
-
-		return true;
-
-	}
-
-	private void verificaKmSalvati() {
-		valideazaKmIntrodusi();
-	}
 
 	private void valideazaKmIntrodusi() {
 		HashMap<String, String> params = new HashMap<String, String>();
-		params.put("nrMasina", UserInfo.getInstance().getNrAuto());
-		params.put("nrKm", textKm.getText().toString());
-
-		opSoferi.valideazaKmMasina(params);
+		
+		params.put("nrAuto", UserInfo.getInstance().getNrAuto());
+		params.put("kmNoi", textKm.getText().toString());
+		opSoferi.verificaKmMasina(params);
 
 	}
 
@@ -281,15 +266,25 @@ public final class KmMasina extends Activity implements SoferiListener, Borderou
 		initKm = Integer.valueOf(kmValue);
 	}
 
-	private void isKmMasinaValid(String result) {
+	
 
-		boolean isKmValid = Boolean.valueOf(result);
-
-		if (isKmValid) {
+	private void valideazaKmSalvati(String result) {
+		
+		HandleJSONData decodeJson = new HandleJSONData(getApplicationContext());
+		
+		StareValidareKm stareValidare = decodeJson.decodeStareValidare(result);
+		
+		if (stareValidare.isKmValid()) {
 			salveazaKmMasina();
 		} else {
-			showAlertDialog();
+			
+			if (stareValidare.getStatusId() == 3)
+				showConfirmDialog(stareValidare.getStatusMsg());
+			else
+				showInfoDialog(stareValidare.getStatusMsg());
+				
 		}
+		
 
 	}
 
@@ -298,12 +293,12 @@ public final class KmMasina extends Activity implements SoferiListener, Borderou
 		adaugaKmMasina();
 	}
 
-	private void showAlertDialog() {
+	private void showConfirmDialog(String strMessage) {
 		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
 
 		alertDialogBuilder.setTitle("Atentie");
 
-		alertDialogBuilder.setMessage("Confirmati km? ").setCancelable(false).setPositiveButton("DA", new DialogInterface.OnClickListener() {
+		alertDialogBuilder.setMessage(strMessage).setCancelable(false).setPositiveButton("DA", new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int id) {
 				salveazaKmMasina();
 
@@ -317,6 +312,26 @@ public final class KmMasina extends Activity implements SoferiListener, Borderou
 		AlertDialog alertDialog = alertDialogBuilder.create();
 		alertDialog.show();
 	}
+	
+	
+	
+	private void showInfoDialog(String strMessage) {
+		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+
+		alertDialogBuilder.setTitle("Atentie");
+
+		alertDialogBuilder.setMessage(strMessage).setCancelable(true).setPositiveButton("Inchide", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int id) {
+				dialog.cancel();
+
+			}
+		});
+
+		AlertDialog alertDialog = alertDialogBuilder.create();
+		alertDialog.show();
+	}
+	
+	
 
 	private void verificaBorderou(String strBorderouri) {
 		HandleJSONData objListBorderouri = new HandleJSONData(this, strBorderouri);
@@ -367,8 +382,8 @@ public final class KmMasina extends Activity implements SoferiListener, Borderou
 		case ADAUGA_KM_MASINA:
 			getBorderouMasina();
 			break;
-		case VALIDEAZA_KM_MASINA:
-			isKmMasinaValid((String) result);
+		case GET_STARE_VALIDARE_KM:
+			valideazaKmSalvati((String) result);
 			break;
 		default:
 			break;

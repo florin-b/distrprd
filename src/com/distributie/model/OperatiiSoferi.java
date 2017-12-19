@@ -70,6 +70,12 @@ public class OperatiiSoferi implements AsyncTaskListener {
 
 	}
 
+	public void verificaKmMasina(HashMap<String, String> params) {
+		numeOperatie = EnumOperatiiSofer.GET_STARE_VALIDARE_KM;
+		performOperation(numeOperatie, params);
+
+	}
+
 	private void performOperation(EnumOperatiiSofer numeOperatie, HashMap<String, String> params) {
 		AsyncTaskWSCall call = new AsyncTaskWSCall(numeOperatie.getNume(), params, (AsyncTaskListener) this, context);
 		call.getCallResults();

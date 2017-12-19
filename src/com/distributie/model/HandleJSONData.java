@@ -6,16 +6,17 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.content.Context;
+import android.widget.Toast;
+
 import com.distributie.beans.Articol;
 import com.distributie.beans.Borderou;
 import com.distributie.beans.Eveniment;
 import com.distributie.beans.EvenimentBorderou;
 import com.distributie.beans.Factura;
 import com.distributie.beans.InitStatus;
+import com.distributie.beans.StareValidareKm;
 import com.distributie.enums.EnumTipOperatie;
-
-import android.content.Context;
-import android.widget.Toast;
 
 public class HandleJSONData {
 
@@ -34,6 +35,10 @@ public class HandleJSONData {
 	public HandleJSONData(Context context, String JSONString) {
 		this.context = context;
 		this.JSONString = JSONString;
+	}
+
+	public HandleJSONData(Context context) {
+		this.context = context;
 	}
 
 	public ArrayList<Borderou> decodeJSONBorderouri() {
@@ -247,6 +252,24 @@ public class HandleJSONData {
 
 			e.printStackTrace();
 		}
+
+	}
+
+	public StareValidareKm decodeStareValidare(String response) {
+		StareValidareKm stareValidare = new StareValidareKm();
+
+		try {
+			JSONObject jsonObject = new JSONObject(response);
+
+			stareValidare.setStatusId(Integer.valueOf(jsonObject.get("statusId").toString()));
+			stareValidare.setStatusMsg(jsonObject.get("statusMsg").toString());
+			stareValidare.setKmValid(Boolean.valueOf(jsonObject.get("isKmValid").toString()));
+
+		} catch (JSONException e) {
+			Toast.makeText(context, e.toString(), Toast.LENGTH_SHORT).show();
+		}
+
+		return stareValidare;
 
 	}
 
