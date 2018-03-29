@@ -11,6 +11,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Timer;
@@ -105,8 +106,8 @@ public class LogonActivity extends Activity implements LogonListener, SoferiList
 			buildVer = String.valueOf(pInfo.versionCode);
 
 			spinnerSoferi = (Spinner) findViewById(R.id.spinnerSoferi);
-			 spinnerSoferi.setVisibility(View.VISIBLE);
-			 setSpinnerSoferiListener();
+			spinnerSoferi.setVisibility(View.VISIBLE);
+			setSpinnerSoferiListener();
 
 			progressBarWheel = (ProgressBar) findViewById(R.id.progress_bar_wheel);
 			progressBarWheel.setVisibility(View.INVISIBLE);
@@ -513,6 +514,7 @@ public class LogonActivity extends Activity implements LogonListener, SoferiList
 
 		if (UserInfo.getInstance().getNume() != null) {
 			txtNumeSofer.setText(UserInfo.getInstance().getNume());
+			UserInfo.getInstance().setLogonDate(new Date());
 			allowLogon = true;
 		} else {
 			txtNumeSofer.setText("Tableta nealocata");

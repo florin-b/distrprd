@@ -1,0 +1,2 @@
+28.03.2018
+-	verificare nr zile de la logare si restartare aplicatie pentru mai mult de o zi;

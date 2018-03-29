@@ -4,6 +4,8 @@
  */
 package com.distributie.model;
 
+import java.util.Date;
+
 public class UserInfo {
 
 	private String nume;
@@ -16,6 +18,7 @@ public class UserInfo {
 	private boolean dti;
 	private String nrAuto;
 	private String kmStart;
+	private Date logonDate;
 
 	private static UserInfo instance = new UserInfo();
 
@@ -104,6 +107,14 @@ public class UserInfo {
 
 	public void setKmStart(String kmStart) {
 		this.kmStart = kmStart;
+	}
+
+	public Date getLogonDate() {
+		return logonDate;
+	}
+
+	public void setLogonDate(Date logonDate) {
+		this.logonDate = logonDate;
 	}
 
 	@Override

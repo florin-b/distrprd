@@ -5,6 +5,7 @@
 package com.distributie.view;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -14,6 +15,7 @@ import java.util.TimerTask;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.Menu;
@@ -165,6 +167,8 @@ public class AfisEtape extends Activity implements BorderouriDAOListener, Operat
 
 	public void getBorderouri() {
 
+		checkLogonTime();
+
 		if (UserInfo.getInstance().isDti())
 			etapeDTI.getEtapeFromListView(listViewEtape);
 
@@ -175,8 +179,31 @@ public class AfisEtape extends Activity implements BorderouriDAOListener, Operat
 
 		BorderouriDAOImpl bord = BorderouriDAOImpl.getInstance(this);
 		bord.setBorderouEventListener(AfisEtape.this);
-		// bord.getBorderouri(UserInfo.getInstance().getId(), "d", "-1");
 		bord.getBorderouriMasina(UserInfo.getInstance().getNrAuto(), UserInfo.getInstance().getId());
+
+	}
+
+	private void checkLogonTime() {
+		Calendar logonCalendar = Calendar.getInstance();
+
+		logonCalendar.setTime(UserInfo.getInstance().getLogonDate());
+
+		int logonDay = logonCalendar.get(Calendar.DAY_OF_WEEK);
+
+		Calendar currentCalendar = Calendar.getInstance();
+
+		currentCalendar.setTime(new Date());
+
+		int currentDay = currentCalendar.get(Calendar.DAY_OF_WEEK);
+
+		if (logonDay != currentDay) {
+
+			stopTimerTask();
+
+			Intent nextScreen = new Intent(getApplicationContext(), LogonActivity.class);
+			startActivity(nextScreen);
+			finish();
+		}
 
 	}
 
@@ -460,6 +487,21 @@ public class AfisEtape extends Activity implements BorderouriDAOListener, Operat
 		super.onCreateOptionsMenu(menu);
 		CreateMenu(menu);
 		return true;
+	}
+
+	@Override
+	protected void onPause() {
+		stopTimerTask();
+		super.onPause();
+	}
+
+	@Override
+	protected void onResume() {
+
+		if (UserInfo.getInstance().isDti())
+			startTimerTask();
+
+		super.onResume();
 	}
 
 	@Override

@@ -16,7 +16,6 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.distributie.adapters.MasiniAdapter;
 import com.distributie.beans.Borderou;
@@ -248,7 +247,7 @@ public final class NrMasina extends Activity implements SoferiListener, Borderou
 		HandleJSONData objListBorderouri = new HandleJSONData(this, strBorderouri);
 		ArrayList<Borderou> listBorderouri = objListBorderouri.decodeJSONBorderouri();
 
-		if (!listBorderouri.isEmpty()) {
+		if (!listBorderouri.isEmpty() && listBorderouri.get(0).getNrAuto() != "null") {
 			nrAutoBorderou = listBorderouri.get(0).getNrAuto();
 			existaBorderou = true;
 		} else {
