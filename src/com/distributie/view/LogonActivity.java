@@ -106,8 +106,8 @@ public class LogonActivity extends Activity implements LogonListener, SoferiList
 			buildVer = String.valueOf(pInfo.versionCode);
 
 			spinnerSoferi = (Spinner) findViewById(R.id.spinnerSoferi);
-			spinnerSoferi.setVisibility(View.VISIBLE);
-			setSpinnerSoferiListener();
+			//spinnerSoferi.setVisibility(View.VISIBLE);
+			//setSpinnerSoferiListener();
 
 			progressBarWheel = (ProgressBar) findViewById(R.id.progress_bar_wheel);
 			progressBarWheel.setVisibility(View.INVISIBLE);
@@ -478,16 +478,6 @@ public class LogonActivity extends Activity implements LogonListener, SoferiList
 	}
 
 	private void redirectView() {
-
-		/*
-		 * Intent nextScreen = new Intent(getApplicationContext(),
-		 * MainMenu.class); startActivity(nextScreen); finish();
-		 */
-
-		/*
-		 * Intent nextScreen = new Intent(getApplicationContext(),
-		 * KmMasina.class); startActivity(nextScreen);
-		 */finish();
 
 		Intent nextScreen = new Intent(getApplicationContext(), NrMasina.class);
 		startActivity(nextScreen);

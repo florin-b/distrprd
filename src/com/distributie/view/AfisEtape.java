@@ -25,7 +25,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
+
 
 import com.distributie.adapters.EtapeAdapter;
 import com.distributie.beans.Borderou;
