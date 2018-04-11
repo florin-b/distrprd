@@ -128,7 +128,7 @@ public class LogonActivity extends Activity implements LogonListener, SoferiList
 			getCodSofer(deviceId);
 
 		} catch (Exception ex) {
-			Toast.makeText(this, ex.toString(), Toast.LENGTH_LONG).show();
+			Toast.makeText(this, ex.toString(), Toast.LENGTH_SHORT).show();
 		}
 
 	}

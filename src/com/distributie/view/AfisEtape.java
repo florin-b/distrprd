@@ -156,7 +156,6 @@ public class AfisEtape extends Activity implements BorderouriDAOListener, Operat
 			public void run() {
 				handler.post(new Runnable() {
 					public void run() {
-
 						getBorderouri();
 
 					}
