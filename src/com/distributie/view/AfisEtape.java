@@ -26,7 +26,6 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
-
 import com.distributie.adapters.EtapeAdapter;
 import com.distributie.beans.Borderou;
 import com.distributie.beans.Etapa;
@@ -99,8 +98,7 @@ public class AfisEtape extends Activity implements BorderouriDAOListener, Operat
 
 		getBorderouri();
 
-		if (UserInfo.getInstance().isDti())
-			startTimerTask();
+		startTimerTask();
 
 	}
 
@@ -134,7 +132,8 @@ public class AfisEtape extends Activity implements BorderouriDAOListener, Operat
 		if (timer == null) {
 			timer = new Timer();
 			initializeTimerTask();
-			timer.schedule(timerTask, 600000, 600000);
+			// timer.schedule(timerTask, 600000, 600000);
+			timer.schedule(timerTask, 60000, 60000);
 
 		}
 
@@ -416,7 +415,6 @@ public class AfisEtape extends Activity implements BorderouriDAOListener, Operat
 		if (!listFacturi.isEmpty()) {
 
 			sfarsitBordDate = null;
-			stopTimerTask();
 
 			for (int i = 0; i < listFacturi.size(); i++) {
 				Etapa etapa = new Etapa();
@@ -440,8 +438,7 @@ public class AfisEtape extends Activity implements BorderouriDAOListener, Operat
 			if (ultimaEtapaId == null)
 				ultimaEtapaId = listEtape.get(listEtape.size() - 1).getCodClient();
 			else {
-				if (!ultimaEtapaId.equals(listEtape.get(listEtape.size() - 1).getCodClient()))
-					stopTimerTask();
+
 			}
 
 			setAutoNrEtapa(listEtape);
@@ -496,9 +493,8 @@ public class AfisEtape extends Activity implements BorderouriDAOListener, Operat
 
 	@Override
 	protected void onResume() {
-
-		if (UserInfo.getInstance().isDti())
-			startTimerTask();
+		checkLogonTime();
+		startTimerTask();
 
 		super.onResume();
 	}
