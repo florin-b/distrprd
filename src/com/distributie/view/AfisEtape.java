@@ -132,8 +132,7 @@ public class AfisEtape extends Activity implements BorderouriDAOListener, Operat
 		if (timer == null) {
 			timer = new Timer();
 			initializeTimerTask();
-			// timer.schedule(timerTask, 600000, 600000);
-			timer.schedule(timerTask, 60000, 60000);
+			 timer.schedule(timerTask, 600000, 600000);
 
 		}
 
