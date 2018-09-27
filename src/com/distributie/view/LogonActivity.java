@@ -106,11 +106,11 @@ public class LogonActivity extends Activity implements LogonListener, SoferiList
 			buildVer = String.valueOf(pInfo.versionCode);
 
 			spinnerSoferi = (Spinner) findViewById(R.id.spinnerSoferi);
-			//spinnerSoferi.setVisibility(View.VISIBLE);
+			spinnerSoferi.setVisibility(View.VISIBLE);
 			setSpinnerSoferiListener();
 
 			progressBarWheel = (ProgressBar) findViewById(R.id.progress_bar_wheel);
-			progressBarWheel.setVisibility(View.INVISIBLE);
+			//progressBarWheel.setVisibility(View.INVISIBLE);
 
 			logonImage = (ImageView) findViewById(R.id.logonImage);
 			addLogonImageListener();

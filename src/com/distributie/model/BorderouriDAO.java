@@ -7,5 +7,6 @@ public interface BorderouriDAO {
 	public void getFacturiBorderou(String nrBorderou, TipBorderou tipBorderou);
 	public void getArticoleBorderou(String nrBorderou, String codClient, String codAdresa);
 	public void getBorderouriMasina(String nrMasina, String codSofer);
+	public void getArticoleBorderouDistributie(String nrBorderou, String codClient, String codAdresa);
 	
 }

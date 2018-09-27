@@ -18,6 +18,7 @@ import com.distributie.beans.Articol;
 import com.distributie.beans.Etapa;
 import com.distributie.enums.EnumOperatiiBorderou;
 import com.distributie.enums.EnumTipOperatie;
+import com.distributie.enums.TipBorderou;
 import com.distributie.listeners.ArticoleEtapaListener;
 import com.distributie.listeners.BorderouriDAOListener;
 import com.distributie.model.BorderouriDAOImpl;
@@ -62,7 +63,7 @@ public class ArticoleEtapaDialog extends Dialog implements BorderouriDAOListener
 		radioInc = (RadioButton) findViewById(R.id.radioIncarcare);
 		radioDesc = (RadioButton) findViewById(R.id.radioDescarcare);
 		groupTipInc = (RadioGroup) findViewById(R.id.radioTipOp);
-		
+
 		textInfo = (TextView) findViewById(R.id.textInfo);
 		setItemsVisibility(false);
 
@@ -132,7 +133,11 @@ public class ArticoleEtapaDialog extends Dialog implements BorderouriDAOListener
 	private void getArticole() {
 		BorderouriDAOImpl bord = BorderouriDAOImpl.getInstance(context);
 		bord.setBorderouEventListener(ArticoleEtapaDialog.this);
-		bord.getArticoleBorderou(etapa.getDocument(), etapa.getCodClient(), etapa.getCodAdresaClient());
+
+		if (etapa.getTipBorderou() == TipBorderou.DISTRIBUTIE)
+			bord.getArticoleBorderouDistributie(etapa.getDocument(), etapa.getCodClient(), etapa.getCodAdresaClient());
+		else
+			bord.getArticoleBorderou(etapa.getDocument(), etapa.getCodClient(), etapa.getCodAdresaClient());
 	}
 
 	private void showArticole(String resultArticole) {
@@ -149,6 +154,7 @@ public class ArticoleEtapaDialog extends Dialog implements BorderouriDAOListener
 	public void loadComplete(String result, EnumOperatiiBorderou methodName) {
 		switch (methodName) {
 		case GET_ARTICOLE_BORDEROU:
+		case GET_ARTICOLE_BORDEROU_DISTRIB:
 			showArticole(result);
 			break;
 		default:

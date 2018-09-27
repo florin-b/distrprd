@@ -207,6 +207,11 @@ public class EtapeAdapter extends BaseAdapter implements OperatiiEvenimenteListe
 				convertView.setBackgroundResource(R.drawable.shadow_light);
 		}
 
+		if (etapa.getTipEtapa() == EnumTipEtapa.SFARSIT_INCARCARE || etapa.getTipEtapa() == EnumTipEtapa.START_BORD)
+			viewHolder.btnArticole.setVisibility(View.INVISIBLE);
+		else
+			viewHolder.btnArticole.setVisibility(View.VISIBLE);
+
 		return convertView;
 	}
 
@@ -267,13 +272,12 @@ public class EtapeAdapter extends BaseAdapter implements OperatiiEvenimenteListe
 	}
 
 	private void setVisibilityArticoleEtapa(ViewHolder viewHolder, Etapa etapa) {
-		if (etapa.getTipBorderou() == TipBorderou.APROVIZIONARE)
+		if (etapa.getTipBorderou() == TipBorderou.APROVIZIONARE || etapa.getTipBorderou() == TipBorderou.DISTRIBUTIE)
 			viewHolder.btnArticole.setVisibility(View.VISIBLE);
 		else
 			viewHolder.btnArticole.setVisibility(View.INVISIBLE);
 	}
 
-	
 	private void getPozitieCurenta() {
 
 		HashMap<String, String> params = new HashMap<String, String>();

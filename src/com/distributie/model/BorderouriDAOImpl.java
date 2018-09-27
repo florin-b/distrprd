@@ -69,6 +69,17 @@ public class BorderouriDAOImpl implements BorderouriDAO, AsyncTaskListener {
 
 	}
 
+	@Override
+	public void getArticoleBorderouDistributie(String nrBorderou, String codClient, String codAdresa) {
+		params = new HashMap<String, String>();
+		params.put("nrBorderou", nrBorderou);
+		params.put("codClient", codClient);
+		params.put("codAdresa", codAdresa);
+		numeComanda = EnumOperatiiBorderou.GET_ARTICOLE_BORDEROU_DISTRIB;
+		performOperation();
+
+	}	
+	
 	private void performOperation() {
 		AsyncTaskWSCall call = new AsyncTaskWSCall(numeComanda.getNumeComanda(), params, (AsyncTaskListener) this,
 				context);
