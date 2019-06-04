@@ -119,6 +119,7 @@ public final class NrMasina extends Activity implements SoferiListener, Borderou
 		BorderouriDAOImpl bord = BorderouriDAOImpl.getInstance(this);
 		bord.setBorderouEventListener(NrMasina.this);
 		bord.getBorderouri(UserInfo.getInstance().getId(), "d", "-1");
+		
 
 	}
 
@@ -165,10 +166,22 @@ public final class NrMasina extends Activity implements SoferiListener, Borderou
 		ArrayList<Borderou> listBorderouri = objListBorderouri.decodeJSONBorderouri();
 
 		if (!listBorderouri.isEmpty()) {
-			valideazaSoferBorderou(listBorderouri.get(0).getCodSofer());
+			valideazaSoferBorderou(listBorderouri.get(0));
 		} else {
 			showInfoScreen("Nu exista borderouri.");
 		}
+
+	}
+
+	private void valideazaSoferBorderou(Borderou borderou) {
+
+		if (borderou.getCodSofer().equals(UserInfo.getInstance().getId())) {
+			Intent nextScreen = new Intent(getApplicationContext(), MainMenu.class);
+			startActivity(nextScreen);
+			finish();
+		} else
+			showInfoScreen("Borderoul " + borderou.getNumarBorderou()
+					+ " alocat pe aceasta masina unui alt sofer nu este finalizat. Contactati contabila de distributie pentru finalizarea acestuia!");
 
 	}
 
@@ -237,7 +250,7 @@ public final class NrMasina extends Activity implements SoferiListener, Borderou
 
 		if (!isAltaMasina)
 			return textNrAuto.getText().toString().replace("-", "").replace(" ", "").equals(nrAutoBorderou);
-		
+
 		return true;
 
 	}

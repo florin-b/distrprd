@@ -36,6 +36,17 @@ public class BorderouriDAOImpl implements BorderouriDAO, AsyncTaskListener {
 
 	}
 	
+	@Override
+	public void getBorderouriTEST(String codSofer, String tipOp, String interval) {
+		params = new HashMap<String, String>();
+		params.put("codSofer", codSofer);
+		params.put("tip", tipOp);
+		params.put("interal", interval);
+		numeComanda = EnumOperatiiBorderou.GET_BORDEROURI_TEST;
+		performOperation();
+
+	}	
+	
 	
 	@Override
 	public void getBorderouriMasina(String nrMasina, String codSofer) {
@@ -46,6 +57,16 @@ public class BorderouriDAOImpl implements BorderouriDAO, AsyncTaskListener {
 		performOperation();
 
 	}
+	
+	@Override
+	public void getBorderouriMasinaTEST(String nrMasina, String codSofer) {
+		params = new HashMap<String, String>();
+		params.put("nrMasina", nrMasina);
+		params.put("codSofer", codSofer);
+		numeComanda = EnumOperatiiBorderou.GET_BORDEROURI_MASINA_TEST;
+		performOperation();
+
+	}	
 	
 
 	@Override

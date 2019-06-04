@@ -14,8 +14,8 @@ public class ConnectionStrings {
 
 	private ConnectionStrings() {
 		this.myUrl = "http://10.1.0.58/AndroidWebServices/DistributieService.asmx";
-		this.myNamespace = "http://distributie.org/";
 		
+		this.myNamespace = "http://distributie.org/";
 
 	}
 

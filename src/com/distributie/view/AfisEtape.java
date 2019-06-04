@@ -177,6 +177,7 @@ public class AfisEtape extends Activity implements BorderouriDAOListener, Operat
 		BorderouriDAOImpl bord = BorderouriDAOImpl.getInstance(this);
 		bord.setBorderouEventListener(AfisEtape.this);
 		bord.getBorderouriMasina(UserInfo.getInstance().getNrAuto(), UserInfo.getInstance().getId());
+		
 
 	}
 
